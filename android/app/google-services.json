@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "281104655266",
+    "project_id": "api-app-cc4de",
+    "storage_bucket": "api-app-cc4de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281104655266:android:087ada22f30aeaa07748fb",
+        "android_client_info": {
+          "package_name": "com.example.googlemap_api"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPGcMQDzWMW7wpTG6gv06bwkXvUNthUxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

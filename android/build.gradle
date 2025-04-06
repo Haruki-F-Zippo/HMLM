@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application' version '8.8.1' apply false
+    id 'com.android.library'
+}
+allprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            url "$rootDir/../node_modules/react-native/android"
+        }
+        google()
+    }
+}
+
+android {
+    namespace = "io.flutter.plugins.firebasecoreexample"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileSdkVersion 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+//tasks.register("clean", Delete) {
+//    delete rootProject.buildDir
+//}
