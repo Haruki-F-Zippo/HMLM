@@ -20,6 +20,7 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => _MapScreenState();
 }
 
+//テスト
 class _MapScreenState extends State<MapScreen> {
   late Position currentUserPosition;
   // ------------  Users  ------------
