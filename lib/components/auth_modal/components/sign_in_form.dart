@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:googlemap_api/components/auth_modal/components/submit_button.dart';
-
 import 'animated_error_message.dart';
 import 'auth_modal_image.dart';
 import 'auth_text_form_field.dart';
@@ -66,14 +65,15 @@ class _SignInFormState extends State<SignInForm> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Form(
       key: _formKey,
       child: Column(
         children: [
           const Text(
-            'Sign In',
+            '"googleアカウントでログインしなさい"',
             style: TextStyle(
-              fontSize: 24.0,
+              fontSize: 18.0,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -85,7 +85,7 @@ class _SignInFormState extends State<SignInForm> {
             controller: _emailController,
             onChanged: (value) => _clearErrorMessage(),
             validator: validateEmail,
-            labelText: 'Email',
+            labelText: 'E-mail',
           ),
           const SizedBox(height: 16.0),
           AuthTextFormField(

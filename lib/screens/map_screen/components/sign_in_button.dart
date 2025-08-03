@@ -14,13 +14,21 @@ class SignInButton extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(30),
             ),
             builder: (BuildContext context) {
               return const AuthModal();
             });
       },
-      label: const Text('SIGN IN'),
+      label: const Text(
+      'LOGIN',
+      style: TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.bold,
+      fontSize: 30,
+      ),
+      ),
+      backgroundColor: Colors.teal,
     );
   }
 }

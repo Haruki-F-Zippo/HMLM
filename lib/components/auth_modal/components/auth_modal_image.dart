@@ -7,7 +7,7 @@ class AuthModalImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox.square(
       dimension: 300,
-      child: Image.asset('assets/images/globe.png'),
+      child: Image.asset('assets/images/HMLM_Beluga_Standard.png'),
     );
   }
 }

@@ -118,7 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: const Text('EDIT PROFILE'),
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
@@ -145,13 +145,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     // ユーザー名のテキストフィールド
                     TextField(
-                      decoration: const InputDecoration(labelText: 'Name'),
+                      decoration: const InputDecoration(labelText: 'NAME'),
                       controller: _nameController,
                     ),
                     // プロフィール詳細のテキストフィールド
                     TextField(
                       maxLines: 5,
-                      decoration: const InputDecoration(labelText: 'Profile'),
+                      decoration: const InputDecoration(labelText: 'PROFILE'),
                       controller: _profileController,
                     ),
                   ],
@@ -160,7 +160,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             ElevatedButton(
               onPressed: updateProfile,
-              child: isLoading ? const AppLoading() : const Text('Save'),
+              child: isLoading ? const AppLoading() : const Text('SAVE'),
             )
           ],
         ),

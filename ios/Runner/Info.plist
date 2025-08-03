@@ -2,12 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>近くの友達の現在地を通知するために位置情報を使用します</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Googlemap Api</string>
+	<string>HMLM</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -27,13 +29,18 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires to add file to your camera</string>
+	<string>このアプリはカメラにファイルを追加する必要があります</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Debugging requires local network access.
+&lt;string&gt;Debugging requires local network access.&lt;/string&gt;
+
+</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<string>現在地周辺の施設を地図に表示するために位置情報を使用します</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app requires to add file to your photo library your microphone</string>
+	<string>このアプリはライブラリとマイクにファイルを追加する必要があります</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires to access your photo library</string>
+	<string>このアプリはライブラリへのアクセスが必要です</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

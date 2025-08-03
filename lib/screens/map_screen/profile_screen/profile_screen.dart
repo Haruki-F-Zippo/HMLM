@@ -26,7 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('PROFILE'),
       ),
       body: StreamBuilder<AppUser?>(
         stream: _fetchAppUser(),
@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                     child: const Text(
-                      '編集',
+                      'EDIT PROFILE',
                       style: TextStyle(
                         color: Colors.blue,
                       ),
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: () => _signOut(context),
                   child: isLoading
                       ? const AppLoading(color: Colors.blue)
-                      : const Text('サインアウト'),
+                      : const Text('SIGN OUT'),
                 ),
               ],
             ),
