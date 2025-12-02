@@ -6,7 +6,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
+# followed by an optional build number separated by a .
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # In Android, build-name is used as versionName while build-number used as versionCode.
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.01
 
 environment:
   sdk: ^3.6.0
@@ -46,9 +46,11 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   flutter_native_splash: ^2.4.6
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  url_launcher: ^6.3.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -58,9 +60,14 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter_native_splash:
-  color: '#93B5A5'
-  image: 'assets/images/HMLM_Loanch.png'
-  fullscreen: true
+    color: "#93B5A5"                            # 背景色（#93B5A5）
+    image: assets/images/HMLM_Loanch.png        # 中央ロゴ
+    fullscreen: true
+    android_gravity: center
+    ios_content_mode: center
+    android_12: # ← Android 12 以降は必須
+      image: assets/images/HMLM_Loanch.png
+      icon_background_color: "#93B5A5"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -76,7 +83,13 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/images/
+    - assets/images/beluga_up.png
+    - assets/images/HMLM_Loanch.png
+    - assets/images/HMLM_Beluga_Standard.png
+    - assets/images/HMLM_Beluga_Front.png
+    - assets/images/HMLM_LOGIN_BACK.png
+    - assets/images/HMLM_UP.png
+    - assets/images/hmlm_hat.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
