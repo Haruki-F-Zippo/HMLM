@@ -138,6 +138,20 @@ class _SignUpFormState extends State<SignUpForm> { // 新規登録フォーム�
       if (user != null) { // 登録成功時
         await createAppUser(user.user!.uid); // Firestoreにユーザーデータを作成
         if (!mounted) return; // 画面が破棄されていたら終了
+
+        // ★ 追加：SnackBarで一時的な通知を表示
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text(
+                '新規登録が完了しました。\n登録したアカウントでサインインしてください。',
+              ),
+              duration: Duration(seconds: 3), // 3秒間表示
+            ),
+          );
+
+        // ★ 既存処理：0.5秒後にモーダルを閉じる
         Future.delayed(
           const Duration(milliseconds: 500), // 0.5秒後に実行
           Navigator.of(context).pop, // モーダルを閉じる

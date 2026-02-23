@@ -1,4 +1,6 @@
+import 'dart:ui'; // ★ ぼかし（BackdropFilter）に必要
 import 'package:flutter/material.dart'; // FlutterのMaterialデザインウィジェット群を使うためのパッケージをインポート
+import 'package:google_fonts/google_fonts.dart'; // ★ HMLMブランドフォント（League Spartan）用
 
 class HmlmScreen extends StatelessWidget { // HMLMアプリ内の「HMLMプロフィール画面」を定義するStatelessWidgetクラス
   const HmlmScreen({super.key}); // コンストラクタ。親クラスにkeyを渡すためのsuper.keyを指定
@@ -6,16 +8,28 @@ class HmlmScreen extends StatelessWidget { // HMLMアプリ内の「HMLMプロ�
   @override
   Widget build(BuildContext context) { // UIツリーを構築するためのbuildメソッド（毎フレーム呼ばれることがある）
     return Scaffold( // 画面全体の基本レイアウト（AppBar・bodyなど）を提供するウィジェット
-      appBar: AppBar( // 画面上部に表示されるAppBar（タイトルバー）を定義
-        title: const Text( // AppBarに表示するタイトルテキストを定義
-          'HMLM', // タイトル文字列（この画面の名前・アプリ名として表示される）
-          style: TextStyle( // タイトルテキストの見た目（フォントスタイル）を指定
-            fontWeight: FontWeight.bold, // タイトルを太字にして強調
-            color: Colors.black, // タイトル文字の色を黒に設定
+      appBar: AppBar(
+        title: Text(
+          'HMLM',
+          style: GoogleFonts.leagueSpartan(
+            fontWeight: FontWeight.w900, // ロゴらしい極太
+            fontSize: 20,               // お好みで 20〜24 あたりで調整OK
+            letterSpacing: 3,           // 文字間を少し広げてブランド感アップ
+            color: Colors.black,
           ),
         ),
-        backgroundColor: const Color(0xFF93B5A5), // AppBarの背景色をHMLMテーマカラー（#93B5A5）に設定
-        elevation: 4, // AppBarの下に影（シャドウ）をつけて立体感を出す
+        backgroundColor: const Color(0xFF93B5A5),
+        elevation: 4,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 12,
+              sigmaY: 12,
+            ),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
       ),
       backgroundColor: Colors.white, // 画面全体の背景色を白に設定し、テキストを見やすくする
       body: SingleChildScrollView( // 縦方向にスクロール可能なコンテナ。内容が画面より長いときにスクロールできるようにする
@@ -56,7 +70,7 @@ class HmlmScreen extends StatelessWidget { // HMLMアプリ内の「HMLMプロ�
                     ),
                     ProfileItem( // 「好き」情報のプロフィールカード
                       title: '好き', // ラベル文字列
-                      value: '都内散歩', // 値の文字列
+                      value: '都内近郊', // 値の文字列
                     ),
                     ProfileItem( // 「嫌い」情報のプロフィールカード
                       title: '嫌い', // ラベル文字列
@@ -83,14 +97,16 @@ class HmlmScreen extends StatelessWidget { // HMLMアプリ内の「HMLMプロ�
 
             const ProfileLongItem( // 本人紹介（長めの文章）をカード形式で表示するカスタムウィジェット
               title: '本人紹介', // セクションのタイトル文字列
-              value: '都内付近の利便性という甘い蜜を啜り続けたいという気持ちで新宿に住み始めたが、想像を絶する大量の人間の群れに怯え、震えて自宅から出られない。 \n外出するためにも嫌いな人間が少なく魅力的な近場を顔も知らない隠キャの仲間たち（HMLMアプリユーザーのこと）に応援を求めHMLMアプリを開発。', // 本人紹介の本文テキスト
+              value:
+              '都内付近の利便性という甘い蜜を啜り続けたいという気持ちで新宿に住み始めたが、想像を絶する大量の人間の群れに怯え、震えて自宅から出られない。 \n外出するためにも嫌いな人間が少なく魅力的な近場を紹介してもらうために顔も知らない隠キャの仲間たち（HMLMアプリユーザーのこと）に応援を求めHMLMアプリを開発。', // 本人紹介の本文テキスト
             ),
 
             const SizedBox(height: 20), // 本人紹介セクションと「夢」セクションの間に20pxのスペースを入れる
 
             const ProfileLongItem( // 夢（長めの文章）をカード形式で表示するカスタムウィジェット
               title: '夢', // セクションタイトル文字列
-              value: 'このアプリを通じて、人混みが苦手で今も外に出られない都内在住の仲間の隠キャ達（HMLMアプリユーザーのこと）を外の世界を連れ出したい。', // 夢の本文テキスト
+              value:
+              'このアプリを通じて、人混みが苦手で今も外に出られない都内在住の仲間の隠キャ達（HMLMアプリユーザーのこと）を外の世界を連れ出したい。', // 夢の本文テキスト
             ),
           ],
         ),
@@ -174,19 +190,3 @@ class ProfileLongItem extends StatelessWidget { // 本人紹介・夢などの�
     );
   }
 }
-
-// =============================
-// 🧩 このファイル全体が何をしているか
-// =============================
-// ・このファイルは、HMLMアプリ内の「HmlmScreen」というプロフィール画面を定義している。
-// ・Scaffoldを使い、AppBarとbodyを持つ1つの画面として構成されている。
-// ・AppBar：タイトル「HMLM」、テーマカラー #93B5A5、影付きでアプリのブランド感を表現。
-// ・body：SingleChildScrollView内にColumnでウィジェットを縦並びにし、
-//   - Text「HMLMとは」 …… 画面のセクションタイトル。
-//   - ProfileItem …… 氏名／年齢／出身地／居住地／好き／嫌い の短いプロフィール項目を
-//                       薄いテーマカラー背景＋角丸のカードとして表示。
-//   - Row（年齢〜嫌い ＋ 画像） …… 左にプロフィールカード群、右にベルーガ画像
-//                       （HMLM_Beluga_Front.png）を配置し、画面右側の空白を有効活用。
-//   - ProfileLongItem …… 本人紹介／夢 といった長文テキストを読みやすいカードで表示。
-// ・全体として、HMLMというキャラクターのプロフィールと世界観を、
-//   テキスト＋カードレイアウト＋キャラクター画像でユーザーに伝える画面となっている。

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // ← ブランドフォント用
+
 
 class TeachScreen extends StatelessWidget {
   const TeachScreen({super.key});
@@ -9,16 +11,19 @@ class TeachScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'TEACH',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.leagueSpartan(
+            fontWeight: FontWeight.w900,
+            fontSize: 22,
+            letterSpacing: 2.5, // ← 少し間隔あけてブランド感を統一
             color: Colors.black,
           ),
         ),
         backgroundColor: _themeGreen,
         elevation: 4,
       ),
+
     );
   }
 }

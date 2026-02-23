@@ -14,6 +14,9 @@ class TeachPlace {
   final Timestamp createdAt;
   final Timestamp updatedAt;
 
+  // ✅ 追加：交通手段
+  final String transportation;
+
   TeachPlace({
     required this.ownerUserId,
     required this.placeName,
@@ -26,7 +29,27 @@ class TeachPlace {
     required this.imagePath,
     required this.createdAt,
     required this.updatedAt,
+    required this.transportation,
   });
+
+  factory TeachPlace.fromDoc(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return TeachPlace(
+      ownerUserId: data['ownerUserId'] as String? ?? '',
+      placeName: data['placeName'] as String? ?? '',
+      description: data['description'] as String? ?? '',
+      lat: (data['lat'] as num).toDouble(),
+      lng: (data['lng'] as num).toDouble(),
+      densityScore: (data['densityScore'] ?? 0) as int,
+      distanceScore: (data['distanceScore'] ?? 0) as int,
+      imageUrl: data['imageUrl'] as String? ?? '',
+      imagePath: data['imagePath'] as String? ?? '',
+      createdAt: (data['createdAt'] ?? Timestamp.now()) as Timestamp,
+      updatedAt: (data['updatedAt'] ?? Timestamp.now()) as Timestamp,
+      transportation: data['transportation'] as String? ?? '', // ✅ 追加
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -41,23 +64,7 @@ class TeachPlace {
       'imagePath': imagePath,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
+      'transportation': transportation, // ✅ 追加
     };
-  }
-
-  factory TeachPlace.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return TeachPlace(
-      ownerUserId: data['ownerUserId'] as String,
-      placeName: data['placeName'] as String,
-      description: data['description'] as String,
-      lat: (data['lat'] as num).toDouble(),
-      lng: (data['lng'] as num).toDouble(),
-      densityScore: data['densityScore'] as int,
-      distanceScore: data['distanceScore'] as int,
-      imageUrl: data['imageUrl'] as String,
-      imagePath: data['imagePath'] as String,
-      createdAt: data['createdAt'] as Timestamp,
-      updatedAt: data['updatedAt'] as Timestamp,
-    );
   }
 }

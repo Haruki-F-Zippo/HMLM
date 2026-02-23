@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.01
+version: 1.0.3+3
 
 environment:
   sdk: ^3.6.0
@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   url_launcher: ^6.3.1
+  google_fonts: ^6.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -90,6 +91,15 @@ flutter:
     - assets/images/HMLM_LOGIN_BACK.png
     - assets/images/HMLM_UP.png
     - assets/images/hmlm_hat.png
+    - assets/images/manual_1.png
+    - assets/images/manual_2.png
+    - assets/images/manual_3.png
+    - assets/images/manual_4.png
+    - assets/images/manual_5.png
+    - assets/images/manual_6.png
+    - assets/images/manual_7.png
+    - assets/images/manual_8.png
+    - assets/images/manual_9.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,60 +1,89 @@
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
+    id "com.google.gms.google-services"
     // END: FlutterFire Configuration
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
 }
-
-def secretProperties = new Properties()
-def secretPropertiesFile = rootProject.file('secret.properties')
-if (secretPropertiesFile.exists()) {
-    secretPropertiesFile.withReader('UTF-8') { reader ->
-        secretProperties.load(reader)
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
     }
 }
 
-android {
-    namespace = "com.example.googlemap_api"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
+def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
-    compileSdk 34
+
+def secretProperties = new Properties()
+def secretPropertiesFile = rootProject.file("secret.properties")
+if (secretPropertiesFile.exists()) {
+    secretPropertiesFile.withReader("UTF-8") { reader ->
+        secretProperties.load(reader)
+    }
+}
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+android {
+    // アプリのパッケージ名
+    namespace "jp.co.haruki.hmlm"
+
+    // ★ プラグイン群に合わせて 35 / NDK 27 を明示
+    compileSdk 35
+    ndkVersion "27.0.12077973"
+
+    defaultConfig {
+        // ★ Application ID
+        applicationId  "jp.co.haruki.hmlm"
+
+        // ★ minSdk は 21 くらいが現実的（必要に応じて後で調整）
+        minSdk 23
+        // ★ targetSdk も 35 に揃える
+        targetSdk 35
+
+        // ★ ここを固定値に変更（flutterVersionCode / Name は使わない）
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+
+        // ★ APIキーが無いときに null で落ちないようにする
+        def mapApiKey = secretProperties.getProperty("googleMap.apiKey") ?: ""
+        manifestPlaceholders += [
+                googleMapApiKey: mapApiKey,
+        ]
+    }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
-    defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.googlemap_api"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdkVersion 34 // <- 20に設定
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
-        compileSdk 34
-        manifestPlaceholders += [
-                googleMapApiKey: secretProperties.getProperty('googleMap.apiKey'),
-        ]
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties["keyAlias"]
+            keyPassword keystoreProperties["keyPassword"]
+            storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+            storePassword keystoreProperties["storePassword"]
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            // TODO: リリース用の署名設定ができるまで debug キーでビルド
+            signingConfig signingConfigs.release
         }
     }
 }
 
 flutter {
-    source = "../.."
+    source "../.."
 }

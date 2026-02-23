@@ -8,159 +8,186 @@ import 'package:googlemap_api/screens/map_screen/components/sign_in_button.dart'
 import 'package:googlemap_api/screens/map_screen/prelogin_screen.dart'; // ★ サインアウト後に遷移するPreLogin画面をインポート
 import '../../../components/app_loading.dart'; // 共通ローディングインジケータをインポート
 import '../../../models/app_user.dart'; // Firestore上のユーザーデータモデルをインポート
-import '../prelogin_screen.dart';
 import 'edit_profile_screen.dart'; // プロフィール編集画面をインポート
+import 'package:google_fonts/google_fonts.dart'; // ★ HMLMブランドフォント（League Spartan）用
 
-class ProfileScreen extends StatefulWidget { // プロフィール画面を定義するStatefulWidgetクラス
-  const ProfileScreen({super.key});
+// =======================================
+// PROFILE SCREEN
+// - targetUserId が null   → 自分のプロフィール
+// - targetUserId が 非null → 他人のプロフィール閲覧モード
+// =======================================
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({
+    super.key,
+    this.targetUserId, // ← 追加：閲覧対象ユーザーID（null なら currentUser）
+  });
+
+  final String? targetUserId;
+
+  bool get isSelf => targetUserId == null;
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState(); // 状態管理用のStateを作成
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> { // プロフィール画面の状態を管理するクラス
+class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = false; // サインアウト中などの処理中状態を管理
   StreamSubscription<User?>? _authSub; // FirebaseAuthの状態変化を監視する購読ストリーム
 
-  setIsLoading(bool value) { // ローディング状態を更新する関数
+  void setIsLoading(bool value) {
     setState(() {
       isLoading = value;
     });
   }
 
   @override
-  void initState() { // 初期化処理。画面生成時に一度だけ呼ばれる。
+  void initState() {
     super.initState();
-    // サインイン/アウトのたびに再描画＆ユーザードキュメントの整備
-    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) async { // 認証状態の変化を監視
-      if (!mounted) return; // ウィジェットが破棄済みなら何もしない
-      setState(() {}); // サインイン状態変化時にUIを再描画
-      if (user != null) { // ユーザーがサインイン済みなら
-        await _ensureAppUserDocument(user); // Firestore上にユーザーデータを用意（無ければ作成）
-      }
-    });
+
+    // 自分のプロフィール画面のときだけ auth 状態を監視
+    if (widget.isSelf) {
+      _authSub = FirebaseAuth.instance
+          .authStateChanges()
+          .listen((user) async {
+        if (!mounted) return;
+        setState(() {}); // サインイン状態変化時にUIを再描画
+        if (user != null) {
+          await _ensureAppUserDocument(user); // Firestore上にユーザーデータを用意（無ければ作成）
+        }
+      });
+    }
   }
 
   @override
-  void dispose() { // 破棄時処理
-    _authSub?.cancel(); // FirebaseAuthのリスナーを解除
+  void dispose() {
+    _authSub?.cancel();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) { // 画面のUIを構築
-    final currentUser = FirebaseAuth.instance.currentUser; // 現在のサインインユーザーを取得
-    return Scaffold( // Materialデザインの基本構造
-      // -----------------------------
-      // 🎨 背景色を「透明」に変更
-      //     → 画面遷移アニメーション中に、
-      //       Scaffold下地の「真っ白」がチラッと見える問題を防ぐ
-      // -----------------------------
-      backgroundColor: Colors
-          .transparent, // ★ 以前: Colors.white → 透明にすることで「白い枠」のチラ見えを抑制
-      appBar: AppBar( // 画面上部のバー
-        title: const Text(
-          'PROFILE', // 画面タイトル
-          style: TextStyle(
-            fontWeight: FontWeight.bold, // ← 太字を追加
-            color: Colors.black, // ← 黒文字で視認性アップ
+  Widget build(BuildContext context) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    // 閲覧対象ユーザーID（自分 or 他人）
+    final viewingUid = widget.targetUserId ?? currentUser?.uid;
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text(
+          'PROFILE',
+          style: GoogleFonts.leagueSpartan(
+            fontWeight: FontWeight.w900, // ロゴっぽく極太
+            fontSize: 22,
+            letterSpacing: 3,           // 文字間を少し広げてブランド感アップ
+            color: Colors.black,
           ),
         ),
-        backgroundColor: const Color(0xFF93B5A5), // ← AppBarを #93B5A5 に変更
-        elevation: 4, // ← 軽いシャドウ
-        surfaceTintColor: Colors.transparent, // ← M3の自動ティント無効化
-        // ガラス風ぼかし（範囲はAppBar内に限定）
+        backgroundColor: const Color(0xFF93B5A5),
+        elevation: 4,
+        surfaceTintColor: Colors.transparent,
         flexibleSpace: ClipRect(
-          child: BackdropFilter( // AppBar背景にぼかしを適用
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12), // ぼかし強度を設定
-            child: Container(color: Colors.transparent), // 透明コンテナでぼかし効果のみ反映
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(color: Colors.transparent),
           ),
         ),
       ),
-      body: () { // body部分を即時関数で動的に生成
-        // 1) 本当に未サインインの場合のみ LOGIN を出す
-        if (currentUser == null) { // ログインしていない場合
-          return SignInButton( // サインインボタンを表示
-            onSignedIn: () async { // サインイン完了時の処理
+      body: () {
+        // 1) 自分のプロフィール + 未サインイン → LOGIN を出す
+        if (widget.isSelf && currentUser == null) {
+          return SignInButton(
+            onSignedIn: () async {
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
-                await _ensureAppUserDocument(user); // Firestoreにユーザー情報を登録
+                await _ensureAppUserDocument(user);
               }
-              if (mounted) setState(() {}); // 画面再描画
+              if (mounted) setState(() {});
             },
           );
         }
-        // 2) サインイン済み：Firestore の doc を待つ間はローディングを出す
-        return StreamBuilder<AppUser?>( // Firestore上のユーザーデータを購読
-          stream: _fetchAppUser(), // ユーザードキュメントの購読ストリーム
+
+        // 2) 閲覧対象ユーザーIDが取れない場合は何も出せない
+        if (viewingUid == null) {
+          return const Center(
+            child: Text('ユーザー情報を取得できませんでした'),
+          );
+        }
+
+        // 3) Firestore の doc をストリームで購読
+        return StreamBuilder<AppUser?>(
+          stream: _fetchAppUser(viewingUid),
           builder: (context, snapshot) {
-            // ストリーム接続待ち・初回フェッチ中 → ローディング
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: AppLoading()); // ローディングインジケータを表示
+              return const Center(child: AppLoading());
             }
 
-            final appUser = snapshot.data; // Firestoreから取得したユーザーデータ
-            // doc がまだ無い/未整備の瞬間もローディング（LOGINは出さない）
+            final appUser = snapshot.data;
             if (appUser == null) {
-              return const Center(child: AppLoading()); // ローディング継続
+              return const Center(child: AppLoading());
             }
+
+            final isSelfProfile = widget.isSelf &&
+                currentUser != null &&
+                currentUser.uid == viewingUid;
 
             return Container(
-              // -----------------------------
-              // 🎨 ここで「中身の背景」を白に設定
-              //     → 通常表示時は今まで通り白背景のプロフィール画面
-              //     → 画面遷移アニメーション中の“下地”は透明なので
-              //       「白い枠」が一瞬見える現象を抑えられる
-              // -----------------------------
-              color: Colors.white, // ★ 背景白はこのコンテンツ領域だけに限定
-              padding: const EdgeInsets.all(20), // 全体に余白を設定
+              color: Colors.white,
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  Container( // 右上に「EDIT PROFILE」ボタンを配置
-                    height: 40,
-                    width: double.infinity,
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () { // 押下時にプロフィール編集画面へ遷移
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) {
-                            return EditProfileScreen(
-                              user: appUser, // 現在のユーザー情報を渡す
-                            );
-                          }),
-                        );
-                      },
-                      child: const Text(
-                        'EDIT PROFILE',
-                        style: TextStyle(
-                          color: Color(0xFF93B5A5), // ← 濃い緑に変更
-                          fontWeight: FontWeight.bold,
+                  // 右上 EDIT PROFILE ボタン（自分のプロフィールのときだけ）
+                  if (isSelfProfile)
+                    Container(
+                      height: 40,
+                      width: double.infinity,
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditProfileScreen(
+                                user: appUser,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'EDIT PROFILE',
+                          style: TextStyle(
+                            color: Color(0xFF93B5A5),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    )
+                  else
+                    const SizedBox(height: 40),
+
                   Expanded(
-                    child: SingleChildScrollView( // 内容が多い場合にスクロール可能に
+                    child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircleAvatar( // ユーザー画像を表示
-                            radius: 100, // サイズ設定
-                            backgroundColor: Colors.transparent, // 背景透明
+                          // プロフィール画像
+                          CircleAvatar(
+                            radius: 100,
+                            backgroundColor: Colors.transparent,
                             backgroundImage: (appUser.imageUrl.isNotEmpty)
-                                ? NetworkImage(appUser.imageUrl) // Firestore上の画像URLを使用
+                                ? NetworkImage(appUser.imageUrl)
                                 : null,
                             child: (appUser.imageUrl.isEmpty)
-                                ? const Icon( // 画像がない場合の代替アイコン
+                                ? const Icon(
                               Icons.person,
                               size: 64,
-                              color: Color(0xFF93B5A5), // 濃い緑（DarkGreen）
+                              color: Color(0xFF93B5A5),
                             )
                                 : null,
                           ),
                           const SizedBox(height: 20),
-                          Text( // ユーザー名を表示
+                          // ユーザー名
+                          Text(
                             appUser.name,
                             style: const TextStyle(
                               fontSize: 24,
@@ -168,7 +195,8 @@ class _ProfileScreenState extends State<ProfileScreen> { // プロフィール�
                             ),
                           ),
                           const SizedBox(height: 20),
-                          Text( // プロフィール文を表示
+                          // プロフィール文
+                          Text(
                             appUser.profile,
                             style: const TextStyle(fontSize: 18),
                           ),
@@ -176,20 +204,21 @@ class _ProfileScreenState extends State<ProfileScreen> { // プロフィール�
                       ),
                     ),
                   ),
-                  TextButton( // サインアウトボタン
-                    onPressed: () => _signOut(context), // 押下でサインアウト処理
-                    child: isLoading // ローディング状態に応じて切り替え
-                        ? const AppLoading(
-                        color: Colors
-                            .blue) // ローディング中は青いインジケータ（※ここは元のまま）
-                        : const Text(
-                      'SIGN OUT', // 通常時のラベル
-                      style: TextStyle(
-                        color: Color(0xFF93B5A5), // ← 濃い緑に変更
-                        fontWeight: FontWeight.bold,
+
+                  // SIGN OUT ボタン（自分のプロフィールのときだけ）
+                  if (isSelfProfile)
+                    TextButton(
+                      onPressed: () => _signOut(context),
+                      child: isLoading
+                          ? const AppLoading(color: Colors.blue)
+                          : const Text(
+                        'SIGN OUT',
+                        style: TextStyle(
+                          color: Color(0xFF93B5A5),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             );
@@ -199,65 +228,82 @@ class _ProfileScreenState extends State<ProfileScreen> { // プロフィール�
     );
   }
 
-  Stream<AppUser?> _fetchAppUser() { // Firestore上のユーザー情報をリアルタイム購読する関数
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      // 未ログイン → ここは呼ばれない想定だが安全のため null を流す
-      return Stream.value(null);
-    }
+  // 対象ユーザーの AppUser を購読
+  Stream<AppUser?> _fetchAppUser(String uid) {
     final ref =
-    FirebaseFirestore.instance.collection('app_users').doc(user.uid); // 対象ユーザーのドキュメント参照を取得
-    return ref.snapshots().map((snap) { // Firestoreの変更をリアルタイムで監視
-      if (!snap.exists) return null; // ドキュメントが存在しない場合はnullを返す
+    FirebaseFirestore.instance.collection('app_users').doc(uid);
+    return ref.snapshots().map((snap) {
+      if (!snap.exists) return null;
       final data = snap.data();
       if (data == null) return null;
       return AppUser.fromDoc(
-          snap.id, data as Map<String, dynamic>); // FirestoreデータをAppUserモデルに変換
+        snap.id,
+        data as Map<String, dynamic>,
+      );
     });
   }
 
   /// サインイン後に app_users/{uid} を用意する（無ければ作成・あれば軽く更新）
-  Future<void> _ensureAppUserDocument(User user) async { // Firestore上にユーザードキュメントを作成・更新
+  Future<void> _ensureAppUserDocument(User user) async {
     final ref =
-    FirebaseFirestore.instance.collection('app_users').doc(user.uid); // 対象ユーザーのドキュメント参照を取得
-    final snap = await ref.get(); // ドキュメントの存在確認
-    if (!snap.exists) { // ドキュメントが存在しない場合 → 新規作成
+    FirebaseFirestore.instance.collection('app_users').doc(user.uid);
+    final snap = await ref.get();
+    if (!snap.exists) {
       await ref.set({
-        'name': user.displayName ?? '', // FirebaseAuth上のdisplayNameを使用（なければ空文字）
-        'profile': '', // 初期プロフィールは空
-        'image_url': user.photoURL ?? '', // FirebaseAuth上のphotoURLを使用（なければ空文字）
-        'createdAt': FieldValue.serverTimestamp(), // 作成時刻をサーバー時刻で保存
-        'updatedAt': FieldValue.serverTimestamp(), // 更新時刻も記録
+        'name': user.displayName ?? '',
+        'profile': '',
+        'image_url': user.photoURL ?? '',
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
-    } else { // 既に存在する場合 → 軽く更新
+    } else {
       await ref.set({
-        'updatedAt': FieldValue.serverTimestamp(), // 更新時刻を上書き
-        if (user.displayName != null)
-          'name': user.displayName, // displayNameがある場合のみ更新
-        if (user.photoURL != null)
-          'image_url': user.photoURL, // 画像URLも同様に更新
-      }, SetOptions(merge: true)); // 既存データにマージ（上書きしない）
+        'updatedAt': FieldValue.serverTimestamp(),
+        if (user.displayName != null) 'name': user.displayName,
+        if (user.photoURL != null) 'image_url': user.photoURL,
+      }, SetOptions(merge: true));
     }
   }
 
-  Future<void> _signOut(BuildContext context) async { // サインアウト処理を実行する関数
+  Future<void> _signOut(BuildContext context) async {
     try {
-      setIsLoading(true); // ローディング開始
+      setIsLoading(true);
+
+      // 少し待ってからサインアウト
       await Future.delayed(
         const Duration(seconds: 1),
-            () => FirebaseAuth.instance.signOut(), // 1秒後にサインアウト
+            () => FirebaseAuth.instance.signOut(),
       );
-      if (context.mounted) { // ウィジェットがまだ有効か確認
-        Navigator.of(context).pushReplacement( // ★ 前の画面に戻るのではなく、PreLogin画面に置き換えて遷移
-          MaterialPageRoute(
-            builder: (_) => const PreLoginScreen(), // ★ サインアウト後に表示する画面
+
+      if (context.mounted) {
+        // =========================================
+        // 🚪 画面全体がフワッと切り替わるフェード遷移
+        // =========================================
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+            const PreLoginScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              // 0.0 → 1.0 へイージングしながらフェードイン
+              final curved = CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeInOut,
+              );
+              return FadeTransition(
+                opacity: curved,
+                child: child,
+              );
+            },
+            transitionDuration:
+            const Duration(milliseconds: 400), // お好みで調整
           ),
         );
       }
     } catch (e) {
-      print(e); // エラー出力
+      print(e);
     } finally {
-      setIsLoading(false); // ローディング終了
+      setIsLoading(false);
     }
   }
 }
@@ -265,9 +311,9 @@ class _ProfileScreenState extends State<ProfileScreen> { // プロフィール�
 // =============================
 // 🧩 このファイル全体の説明（変更後）
 // =============================
-// ・プロフィール画面の機能（サインイン状態監視、Firestore連携、プロフィール表示/編集、サインアウト）は元のまま。
-// ・画面遷移時に「白い枠」が一瞬見える問題は、Scaffoldの背景色が純白だったことが原因と想定。
-//   → Scaffold.backgroundColor を Colors.transparent に変更し、
-//      通常表示時にだけ Container(color: Colors.white) でコンテンツ領域の背景を白にしている。
-// ・これにより、ページ遷移アニメーションの境界で「下地の白」が出る現象を抑えつつ、
-//   実際のプロフィール画面の見た目（中央コンテンツの白背景）は従来と同じまま維持している。
+// ・_signOut 内の画面遷移を MaterialPageRoute → PageRouteBuilder に変更。
+// ・transitionsBuilder で FadeTransition を使い、
+//   PROFILE → PreLoginScreen への遷移をスライドではなく
+//   「画面全体がフワッと切り替わる」フェードアニメーションにしている。
+// ・pushReplacement を使っているので、戻るボタンで PROFILE に戻れないように
+//   これまで同様ルートを差し替えている。

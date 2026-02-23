@@ -1,9 +1,12 @@
+import 'dart:ui'; // ★ ぼかしに必要
 import 'package:flutter/material.dart';
 
 // ↓ 遷移先画面のファイルを同じフォルダに作る想定のimport
 import 'manual_edit_profile_screen.dart';
 import 'manual_teach_screen.dart';
 import 'manual_watch_screen.dart';
+import 'package:google_fonts/google_fonts.dart'; // ← League Spartan 追加
+
 
 class ManualScreen extends StatelessWidget {
   const ManualScreen({super.key});
@@ -14,22 +17,36 @@ class ManualScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'MANUAL',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+          style: GoogleFonts.leagueSpartan(
+            fontWeight: FontWeight.w900,
+            fontSize: 22,
+            letterSpacing: 3,
             color: Colors.black,
           ),
         ),
         backgroundColor: _themeGreen,
         elevation: 4,
+        // ★ M3の色変化を防止
+        surfaceTintColor: Colors.transparent,
+        // ★ AppBarと白背景の境界をふわっとぼかす
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 12,
+              sigmaY: 12,
+            ),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
       ),
       backgroundColor: Colors.white,
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         children: [
           _ManualMenuItem(
-            title: 'EDIT PROFILEとは',
+            title: '手順01.EDIT PROFILEとは',
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -40,7 +57,7 @@ class ManualScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _ManualMenuItem(
-            title: 'TEACHとは',
+            title: '手順02.TEACHとは',
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -51,7 +68,7 @@ class ManualScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _ManualMenuItem(
-            title: 'WATCHとは',
+            title: '手順03.WATCHとは',
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(

@@ -99,7 +99,7 @@ class _SignInFormState extends State<SignInForm> { // SignInFormの状態を管�
             mainAxisAlignment: MainAxisAlignment.start, // ← フォーム全体を上寄せに配置
             children: [
               const Text( // 説明文を表示するテキスト（既存ユーザー向け案内のみ残す）
-                '新規登録済みの方はgoogleアカウントで「サインイン」をしなさい',
+                '新規登録済みの方は作成したアカウントで「サインイン」をしなさい',
                 style: TextStyle(
                   fontSize: 18.0, // 文字サイズを18に設定
                   fontWeight: FontWeight.bold, // 太字に設定

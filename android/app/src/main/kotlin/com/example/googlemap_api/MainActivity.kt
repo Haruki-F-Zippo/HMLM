@@ -1,4 +1,4 @@
-package com.example.googlemap_api
+package jp.co.haruki.hmlm
 
 import io.flutter.embedding.android.FlutterActivity
 
