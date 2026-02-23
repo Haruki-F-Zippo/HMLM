@@ -1,8 +1,10 @@
+import 'dart:ui'; // ← グローバルエラーハンドラ（PlatformDispatcher）で使用
 import 'package:flutter/material.dart'; // ← Flutterの基本UIライブラリをインポート
 import 'package:googlemap_api/screens/map_screen/map_screen.dart'; // ← アプリのメイン画面（MapScreen）をインポート
 import 'package:googlemap_api/firebase_options.dart'; // ← Firebaseの設定情報をインポート
 import 'package:firebase_core/firebase_core.dart'; // ← Firebase初期化に必要なパッケージをインポート
 import 'package:firebase_auth/firebase_auth.dart'; // ← Firebase認証の状態（ログイン済みか）を確認するために使用
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // ← Crashlyticsエラーレポート送信用
 import 'package:googlemap_api/screens/map_screen/prelogin_screen.dart'; // ← ログイン前に見せる画面
 
 Future<void> main() async { // ← アプリのエントリーポイント（非同期関数）
@@ -10,6 +12,16 @@ Future<void> main() async { // ← アプリのエントリーポイント（非
   await Firebase.initializeApp( // ← Firebaseを初期化
     options: DefaultFirebaseOptions.currentPlatform, // ← 現在のプラットフォーム用のFirebase設定を読み込む
   );
+
+  // Flutterフレームワーク起因の致命的エラーをCrashlyticsへ送信
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+
+  // 非同期ゾーン外の致命的エラーをCrashlyticsへ送信
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
   runApp(const MyApp()); // ← MyAppウィジェットをアプリとして実行
 }
 
