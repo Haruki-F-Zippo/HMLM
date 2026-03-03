@@ -30,3 +30,17 @@ To complete production setup, run the following once in your environment:
 4. Build release artifacts once so Crashlytics can process symbols.
 
 The app now sends fatal Flutter and platform errors to Crashlytics at startup.
+
+## Secrets management
+
+This repository intentionally uses placeholder values for API keys.
+
+- Android Google Maps key:
+  1. Copy `android/secret.properties.example` to `android/secret.properties`.
+  2. Set `googleMap.apiKey` in `android/secret.properties`.
+- iOS Google Maps key:
+  1. Set `GOOGLE_MAPS_API_KEY` in `ios/Runner/Info.plist` for local development.
+  2. In CI/release builds, inject `GOOGLE_MAPS_API_KEY` from secret build settings.
+- Firebase config files (`google-services.json`, `GoogleService-Info.plist`, and `lib/firebase_options.dart`) must be replaced with project-specific values generated from your Firebase project.
+
+Never commit real API keys or production secrets.
