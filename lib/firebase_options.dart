@@ -51,7 +51,7 @@ class DefaultFirebaseOptions { // ← Firebase 各プラットフォームの設
   }
 
   static const FirebaseOptions android = FirebaseOptions( // ← Android 用の Firebase 設定を定義
-    apiKey: 'AIzaSyBPGcMQDzWMW7wpTG6gv06bwkXvUNthUxk', // ← Firebase プロジェクトのAPIキー
+    apiKey: 'FIREBASE_ANDROID_API_KEY', // ← Firebase プロジェクトのAPIキー
     appId: '1:281104655266:android:087ada22f30aeaa07748fb', // ← FirebaseアプリのID
     messagingSenderId: '281104655266', // ← Firebase Cloud Messagingの送信者ID
     projectId: 'api-app-cc4de', // ← FirebaseプロジェクトID
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions { // ← Firebase 各プラットフォームの設
   );
 
   static const FirebaseOptions ios = FirebaseOptions( // ← iOS 用の Firebase 設定を定義
-    apiKey: 'AIzaSyCMuI-gSoXNiKzKq0sgtt2qxPdW6YV2drc', // ← FirebaseプロジェクトのAPIキー（iOS用）
+    apiKey: 'FIREBASE_IOS_API_KEY', // ← FirebaseプロジェクトのAPIキー（iOS用）
     appId: '1:281104655266:ios:c6da651f1478150e7748fb', // ← FirebaseアプリのID（iOS）
     messagingSenderId: '281104655266', // ← Firebase Cloud Messagingの送信者ID
     projectId: 'api-app-cc4de', // ← FirebaseプロジェクトID
