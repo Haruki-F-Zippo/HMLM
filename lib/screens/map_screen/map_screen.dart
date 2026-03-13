@@ -59,6 +59,10 @@ class _MapScreenState extends State<MapScreen> {
     distanceFilter: 20, // 20m移動でイベント発火
   );
 
+  // ------------  Camera follow control  ------------
+  static const Duration _cameraFollowInterval = Duration(minutes: 5);
+  DateTime? _lastCameraFollowAt;
+
   // ------------  Auth  ------------
   late StreamSubscription<User?> authUserStream; // 認証状態リスナー
   String currentUserId = ''; // 現在ログイン中のuid
@@ -580,7 +584,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _watchCurrentLocation() {
-    // 位置更新ストリーム購読→Firestore更新・カメラ追従のみ
+    // 位置更新ストリーム購読→Firestore更新。
+    // カメラ追従は「5分に1回まで」に制限して、
+    // ユーザーの手動操作中に勝手に戻り続ける挙動を防ぐ。
     positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .listen((position) async {
@@ -590,14 +596,22 @@ class _MapScreenState extends State<MapScreen> {
 
           await _updateUserLocationInFirestore(position);
 
-          await mapController.animateCamera(
-            CameraUpdate.newCameraPosition(
-              CameraPosition(
-                target: LatLng(position.latitude, position.longitude),
-                zoom: await mapController.getZoomLevel(),
+          final now = DateTime.now();
+          final canAutoFollow =
+              _lastCameraFollowAt == null ||
+              now.difference(_lastCameraFollowAt!) >= _cameraFollowInterval;
+
+          if (canAutoFollow) {
+            await mapController.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: LatLng(position.latitude, position.longitude),
+                  zoom: await mapController.getZoomLevel(),
+                ),
               ),
-            ),
-          );
+            );
+            _lastCameraFollowAt = now;
+          }
         });
   }
 
