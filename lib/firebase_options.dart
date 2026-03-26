@@ -64,7 +64,7 @@ class DefaultFirebaseOptions { // ← Firebase 各プラットフォームの設
     messagingSenderId: '281104655266', // ← Firebase Cloud Messagingの送信者ID
     projectId: 'api-app-cc4de', // ← FirebaseプロジェクトID
     storageBucket: 'api-app-cc4de.firebasestorage.app', // ← Firebase StorageのURL
-    iosBundleId: 'com.example.googlemapApi', // ← iOSアプリのバンドルID
+    iosBundleId: 'com.example.hmlm.fh', // ← iOSアプリのバンドルID
   );
 }
 

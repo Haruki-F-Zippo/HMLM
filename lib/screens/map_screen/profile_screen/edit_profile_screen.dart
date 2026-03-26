@@ -150,13 +150,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> { // プロフィ
                       onTap: () => pickImage(widget.user.id!),
                       child: CircleAvatar(
                         radius: 100,
-                        backgroundColor: Colors.transparent,
+                        backgroundColor: const Color(0xFFE6E6E6),
                         backgroundImage:
                         (imageUrl.isNotEmpty) ? NetworkImage(imageUrl) : null,
                         child: isImageLoading
                             ? const AppLoading(color: Colors.blue)
                             : (imageUrl.isEmpty
-                            ? const Icon(Icons.person, size: 64)
+                            ? const Icon(
+                          Icons.help_outline,
+                          size: 80,
+                          color: Color(0xFF9AA0A6),
+                        )
                             : null),
                       ),
                     ),
